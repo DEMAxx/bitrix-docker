@@ -17,13 +17,13 @@ RUN cd /root/ && \
 RUN addgroup -g 979 bitrix && \
     adduser -D -u 979 -G bitrix bitrix
 
-RUN mkdir -pv /opt/www /opt/.bx_temp /opt/msmtp /opt/browscap /opt/geoip2 /ssl /var/runs/nginx && \
+RUN mkdir -pv /var/www/htdocs /opt/.bx_temp /opt/msmtp /opt/browscap /opt/geoip2 /ssl /var/runs/nginx && \
     chown -R bitrix:bitrix /var/log/nginx && \
     chown -R bitrix:bitrix /var/cache/nginx && \
     chown -R bitrix:bitrix /var/runs/nginx && \
     chown -R bitrix:bitrix /usr/lib/nginx/modules && \
     chown -R bitrix:bitrix /etc/nginx && \
-    chown -R bitrix:bitrix /opt/www && \
+    chown -R bitrix:bitrix /var/www/htdocs && \
     chown -R bitrix:bitrix /opt/.bx_temp && \
     chown -R bitrix:bitrix /opt/msmtp && \
     chown -R bitrix:bitrix /opt/browscap && \

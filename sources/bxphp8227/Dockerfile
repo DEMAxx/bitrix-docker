@@ -83,9 +83,9 @@ RUN docker-php-source delete && \
 RUN addgroup -g 979 bitrix && \
     adduser -D -u 979 -G bitrix bitrix
 
-RUN mkdir -pv /opt/www /opt/.bx_temp /opt/browscap /opt/geoip2 /ssl && \
+RUN mkdir -pv /var/www/htdocs /opt/.bx_temp /opt/browscap /opt/geoip2 /ssl && \
     chown -R bitrix:bitrix /usr/local/etc && \
-    chown -R bitrix:bitrix /opt/www && \
+    chown -R bitrix:bitrix /var/www/htdocs && \
     chown -R bitrix:bitrix /opt/.bx_temp && \
     chown -R bitrix:bitrix /opt/msmtp && \
     chown -R bitrix:bitrix /opt/browscap && \
