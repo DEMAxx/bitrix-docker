@@ -4,6 +4,21 @@
 
 Программы, необходимые для работы технологий Битрикс, запускаются в контейнерах (`Docker Containers`). По шаблону из образов (`Docker Images`). Данные хранятся в томах (`Docker Volumes`). Связаны между собой посредством сети (`Docker Network`). И управляются (оркестрируются) используя compose (`Docker Compose`).
 
+> В случае возникновения проблем с кодировкой необходимо изменить файл after_connect_d7.php
+
+> Добавить php код
+<code> <?php
+$this->queryExecute("SET sql_mode=''");
+$this->queryExecute("SET innodb_strict_mode=0");
+$this->queryExecute("SET NAMES 'utf8'");
+$this->queryExecute("SET collation_connection = 'utf8_unicode_ci'");
+$this->queryExecute("SET character_set_results = 'utf8'");
+$this->queryExecute("SET LOCAL time_zone='".date('P')."'");
+?></code>
+
+Для использования переменных среды скопируйте .env-example в .env
+> cp .env-example .env
+
 > [!CAUTION]
 > Внимание! Девелоперский сайт не рекомендуется для использования в "боевом" режиме (он же "продакшен"). Однако, это не запрещено.
 >
