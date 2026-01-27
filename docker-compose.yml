@@ -5,9 +5,11 @@ volumes:
     driver: local
   mysql_lib_data:
     driver: local
+  maria_lib_data:
+    driver: local
   postgres_data:
     driver: local
-  www_data:
+  htdocs:
     driver: local
   bxtemp_data:
     driver: local
@@ -26,8 +28,8 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-#    ports:
-#      - "11211:11211"
+    ports:
+      - "11211:11211"
     init: true
     cgroup: private
     security_opt:
@@ -49,8 +51,8 @@ services:
     command: redis-server /usr/local/etc/redis/redis.conf
     env_file:
       - .env
-#    ports:
-#      - "6379:6379"
+    ports:
+      - "6379:6379"
     volumes:
       - redis_data:/data
       - ./confs/redis/redis.conf:/usr/local/etc/redis/redis.conf
@@ -79,8 +81,8 @@ services:
     env_file:
       - .env
       - .env_sql
-#    ports:
-#      - "5432:5432"
+    ports:
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     init: true
@@ -105,15 +107,13 @@ services:
           - postgres
   mysql:
     image: quay.io/bitrix24/percona-server:8.0.42-v1-rhel
-    #image: quay.io/bitrix24/percona-server:8.4.5-v1-rhel
     container_name: dev_mysql
     restart: unless-stopped
     env_file:
       - .env
       - .env_sql
-#    ports:
-#      - "3306:3306"
-#      - "33060:33060"
+    ports:
+      - "3306:3306"
     volumes:
       - mysql_log_data:/var/log/mysql
       - mysql_lib_data:/var/lib/mysql
@@ -133,6 +133,34 @@ services:
       dev:
         aliases:
           - mysql
+  mariadb:
+    image: mariadb:10.11
+    container_name: dev_mariadb
+    restart: unless-stopped
+    user: "mysql"
+    env_file:
+      - .env
+      - .env_sql
+    ports:
+      - "3307:3306"
+    volumes:
+      - maria_lib_data:/var/log/mariadb
+      - maria_lib_data:/var/lib/mysql
+    init: true
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - ALL
+    cap_add:
+      - SYS_NICE
+    tmpfs:
+      - /tmp:noexec,nodev,nosuid
+      - /var/tmp:noexec,nodev,nosuid
+      - /dev/shm:noexec,nodev,nosuid
+    networks:
+      dev:
+        aliases:
+          - mariadb
   php:
     image: quay.io/bitrix24/php:8.3.22-fpm-v1-alpine
     container_name: dev_php
@@ -140,11 +168,12 @@ services:
     env_file:
       - .env
       - .env_php
-#    ports:
-#      - "9000:9000"
+    ports:
+      - "9000:9000"
     volumes:
       - ./confs/php83/etc/:/usr/local/etc/
-      - www_data:/opt/www/
+      - ./htdocs:/var/www/htdocs/
+      - ../lab4ubitrixcore22600300:/var/www/htdocs/bitrix/
       - bxtemp_data:/opt/.bx_temp/
       - msmtp_data:/opt/msmtp/
       - browscap_data:/opt/browscap/
@@ -175,7 +204,8 @@ services:
       - "8589:443"
     volumes:
       - ./confs/nginx/:/etc/nginx/
-      - www_data:/opt/www/
+      - ./htdocs:/var/www/htdocs/
+      - ../lab4ubitrixcore22600300:/var/www/htdocs/bitrix/
       - bxtemp_data:/opt/.bx_temp/
       - ssl_data:/ssl/
     init: true
@@ -206,8 +236,8 @@ services:
       - .env_push
       - .env_push_sub
       - .env_redis
-#    ports:
-#      - "8010:8010"
+    ports:
+      - "8010:8010"
     init: true
     cgroup: private
     security_opt:
@@ -233,8 +263,8 @@ services:
       - .env_push
       - .env_push_pub
       - .env_redis
-#    ports:
-#      - "9010:9010"
+    ports:
+      - "9010:9010"
     init: true
     cgroup: private
     security_opt:
@@ -254,9 +284,8 @@ services:
   sphinx:
     image: quay.io/bitrix24/sphinx:2.2.11-v1-alpine
     container_name: dev_sphinx
-#    ports:
-#      - "9306:9306"
-#      - "9312:9312"
+    ports:
+      - "9306:9306"
     restart: unless-stopped
     env_file:
       - .env
@@ -277,9 +306,7 @@ services:
         aliases:
           - sphinx
   cron:
-    image: quay.io/bitrix24/php:8.2.28-fpm-v1-alpine
-    #image: quay.io/bitrix24/php:8.3.22-fpm-v1-alpine
-    #image: quay.io/bitrix24/php:8.4.8-fpm-v1-alpine
+    image: quay.io/bitrix24/php:8.3.22-fpm-v1-alpine
     container_name: dev_cron
     restart: unless-stopped
     command: crond -f -d 8
@@ -287,11 +314,12 @@ services:
     env_file:
       - .env
       - .env_php
-#    ports:
-#      - "9001:9000"
+    ports:
+      - "9001:9000"
     volumes:
       - ./confs/php82/etc/:/usr/local/etc/
-      - www_data:/opt/www/
+      - ./htdocs:/var/www/htdocs/
+      - ../lab4ubitrixcore22600300:/var/www/htdocs/bitrix/
       - bxtemp_data:/opt/.bx_temp/
       - msmtp_data:/opt/msmtp/
       - browscap_data:/opt/browscap/
