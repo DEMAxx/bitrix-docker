@@ -163,6 +163,7 @@ services:
           - mariadb
   php:
     image: quay.io/bitrix24/php:8.3.22-fpm-v1-alpine
+    user: "1000:1000"
     container_name: dev_php
     restart: unless-stopped
     env_file:
