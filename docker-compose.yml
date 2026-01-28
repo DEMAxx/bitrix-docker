@@ -144,6 +144,8 @@ services:
     ports:
       - "3307:3306"
     volumes:
+      # Ваш конфиг в стандартную папку для дополнительных настроек
+      - ./confs/mariadb/custom.cnf.d/docker.cnf:/etc/mysql/mariadb.conf.d/custom.cnf
       - maria_lib_data:/var/log/mariadb
       - maria_lib_data:/var/lib/mysql
     init: true
@@ -201,8 +203,8 @@ services:
     env_file:
       - .env
     ports:
-      - "8588:80"
-      - "8589:443"
+      - "80:80"
+      - "443:443"
     volumes:
       - ./confs/nginx/:/etc/nginx/
       - ./htdocs:/var/www/htdocs/
@@ -381,7 +383,7 @@ services:
     env_file:
       - .env
     ports:
-      - "80:80"
+      - "8080:80"
     volumes:
       - ssl_data:/ssl/
     init: true
